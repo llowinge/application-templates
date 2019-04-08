@@ -164,6 +164,12 @@
       "value": "0.8G",
       "required": true,
       "description": "The amount of memory the build container is limited to use."
+    },
+    {
+      "name": "MAVEN_MIRROR_URL",
+      "displayName": "Maven mirror URL",
+      "required": false,
+      "description": "Maven mirror to use for S2I builds."
     }
   ],
   "objects": [
@@ -259,6 +265,10 @@
               {
                 "name": "MAVEN_ARGS_APPEND",
                 "value": "${MAVEN_ARGS_APPEND}"
+              },
+              {
+                "name": "MAVEN_MIRROR_URL",
+                "value": "${MAVEN_MIRROR_URL}"
               }
             ]
           }
@@ -476,9 +486,9 @@
       }
     },
     {
-      "apiVersion" : "v1",
-      "kind" : "Service",
-      "metadata" : {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
         "labels": {
           "component": "${APP_NAME}",
           "app": "${APP_NAME}",
@@ -486,43 +496,45 @@
           "version": "${APP_VERSION}",
           "group": "quickstarts"
         },
-        "name" : "${APP_NAME}-headless"
+        "name": "${APP_NAME}-headless"
       },
-      "spec" : {
-        "clusterIP" : "None",
-        "ports" : [ {
-          "name" : "http",
-          "port" : 8080,
-          "protocol" : "TCP",
-          "targetPort" : 8080
-        } ],
-        "selector" : {
-          "app" : "${APP_NAME}",
-          "group" : "quickstarts",
-          "provider" : "s2i"
+      "spec": {
+        "clusterIP": "None",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8080,
+            "protocol": "TCP",
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "app": "${APP_NAME}",
+          "group": "quickstarts",
+          "provider": "s2i"
         }
       }
     },
     {
-      "apiVersion" : "route.openshift.io/v1",
-      "kind" : "Route",
-      "metadata" : {
-        "labels" : {
-          "component" : "${APP_NAME}",
-          "app" : "${APP_NAME}",
-          "provider" : "s2i",
-          "version" : "${APP_VERSION}",
-          "group" : "quickstarts"
+      "apiVersion": "route.openshift.io/v1",
+      "kind": "Route",
+      "metadata": {
+        "labels": {
+          "component": "${APP_NAME}",
+          "app": "${APP_NAME}",
+          "provider": "s2i",
+          "version": "${APP_VERSION}",
+          "group": "quickstarts"
         },
-        "name" : "${APP_NAME}"
+        "name": "${APP_NAME}"
       },
-      "spec" : {
-        "port" : {
-          "targetPort" : 8080
+      "spec": {
+        "port": {
+          "targetPort": 8080
         },
-        "to" : {
-          "kind" : "Service",
-          "name" : "${APP_NAME}"
+        "to": {
+          "kind": "Service",
+          "name": "${APP_NAME}"
         }
       }
     },

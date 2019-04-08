@@ -148,6 +148,12 @@
       "value": "0.8G",
       "required": true,
       "description": "The amount of memory the build container is limited to use."
+    },
+    {
+      "name": "MAVEN_MIRROR_URL",
+      "displayName": "Maven mirror URL",
+      "required": false,
+      "description": "Maven mirror to use for S2I builds."
     }
   ],
   "objects": [
@@ -175,8 +181,7 @@
       "apiVersion": "v1",
       "kind": "Service",
       "metadata": {
-        "annotations": {
-        },
+        "annotations": {},
         "labels": {
           "component": "${APP_NAME}",
           "provider": "s2i",
@@ -292,6 +297,10 @@
               {
                 "name": "MAVEN_ARGS_APPEND",
                 "value": "${MAVEN_ARGS_APPEND}"
+              },
+              {
+                "name": "MAVEN_MIRROR_URL",
+                "value": "${MAVEN_MIRROR_URL}"
               }
             ]
           }
@@ -374,19 +383,19 @@
               {
                 "name": "${APP_NAME}",
                 "image": "library/${APP_NAME}:latest",
-                "readinessProbe" : {
-                  "httpGet" : {
-                    "path" : "/health",
-                    "port" : 8081
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/health",
+                    "port": 8081
                   },
-                  "initialDelaySeconds" : 10
+                  "initialDelaySeconds": 10
                 },
-                "livenessProbe" : {
-                  "httpGet" : {
-                    "path" : "/health",
-                    "port" : 8081
+                "livenessProbe": {
+                  "httpGet": {
+                    "path": "/health",
+                    "port": 8081
                   },
-                  "initialDelaySeconds" : 180
+                  "initialDelaySeconds": 180
                 },
                 "ports": [
                   {
@@ -398,26 +407,32 @@
                     "name": "jolokia"
                   }
                 ],
-                "env" : [ {
-                  "name" : "KUBERNETES_NAMESPACE",
-                  "valueFrom" : {
-                    "fieldRef" : {
-                      "fieldPath" : "metadata.namespace"
+                "env": [
+                  {
+                    "name": "KUBERNETES_NAMESPACE",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "fieldPath": "metadata.namespace"
+                      }
                     }
+                  },
+                  {
+                    "name": "MYSQL_SERVICE_NAME",
+                    "value": "${MYSQL_SERVICE_NAME}"
+                  },
+                  {
+                    "name": "MYSQL_SERVICE_DATABASE",
+                    "value": "${MYSQL_SERVICE_DATABASE}"
+                  },
+                  {
+                    "name": "MYSQL_SERVICE_USERNAME",
+                    "value": "${MYSQL_SERVICE_USERNAME}"
+                  },
+                  {
+                    "name": "MYSQL_SERVICE_PASSWORD",
+                    "value": "${MYSQL_SERVICE_PASSWORD}"
                   }
-                } , {
-                  "name": "MYSQL_SERVICE_NAME",
-                  "value": "${MYSQL_SERVICE_NAME}"
-                }, {
-                  "name": "MYSQL_SERVICE_DATABASE",
-                  "value": "${MYSQL_SERVICE_DATABASE}"
-                }, {
-                  "name": "MYSQL_SERVICE_USERNAME",
-                  "value": "${MYSQL_SERVICE_USERNAME}"
-                }, {
-                  "name": "MYSQL_SERVICE_PASSWORD",
-                  "value": "${MYSQL_SERVICE_PASSWORD}"
-                } ],
+                ],
                 "resources": {
                   "requests": {
                     "cpu": "${CPU_REQUEST}",
