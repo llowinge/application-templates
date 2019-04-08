@@ -139,6 +139,12 @@
       "value": "0.8G",
       "required": true,
       "description": "The amount of memory the build container is limited to use."
+    },
+    {
+      "name": "MAVEN_MIRROR_URL",
+      "displayName": "Maven mirror URL",
+      "required": false,
+      "description": "Maven mirror to use for S2I builds."
     }
   ],
   "objects": [
@@ -230,6 +236,10 @@
               {
                 "name": "MAVEN_ARGS_APPEND",
                 "value": "${MAVEN_ARGS_APPEND}"
+              },
+              {
+                "name": "MAVEN_MIRROR_URL",
+                "value": "${MAVEN_MIRROR_URL}"
               }
             ]
           }
@@ -312,19 +322,19 @@
               {
                 "name": "${APP_NAME}",
                 "image": "library/${APP_NAME}:latest",
-                "readinessProbe" : {
-                  "httpGet" : {
-                    "path" : "/health",
-                    "port" : 8081
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/health",
+                    "port": 8081
                   },
-                  "initialDelaySeconds" : 10
+                  "initialDelaySeconds": 10
                 },
-                "livenessProbe" : {
-                  "httpGet" : {
-                    "path" : "/health",
-                    "port" : 8081
+                "livenessProbe": {
+                  "httpGet": {
+                    "path": "/health",
+                    "port": 8081
                   },
-                  "initialDelaySeconds" : 180
+                  "initialDelaySeconds": 180
                 },
                 "ports": [
                   {
@@ -332,23 +342,28 @@
                     "name": "jolokia"
                   }
                 ],
-                "env" : [ {
-                  "name" : "KUBERNETES_NAMESPACE",
-                  "valueFrom" : {
-                    "fieldRef" : {
-                      "fieldPath" : "metadata.namespace"
+                "env": [
+                  {
+                    "name": "KUBERNETES_NAMESPACE",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "fieldPath": "metadata.namespace"
+                      }
                     }
+                  },
+                  {
+                    "name": "KIESERVER_SERVICE",
+                    "value": "${KIESERVER_SERVICE}"
+                  },
+                  {
+                    "name": "KIESERVER_USERNAME",
+                    "value": "${KIESERVER_USERNAME}"
+                  },
+                  {
+                    "name": "KIESERVER_PASSWORD",
+                    "value": "${KIESERVER_PASSWORD}"
                   }
-                }, {
-                  "name": "KIESERVER_SERVICE",
-                  "value": "${KIESERVER_SERVICE}"
-                }, {
-                  "name": "KIESERVER_USERNAME",
-                  "value": "${KIESERVER_USERNAME}"
-                }, {
-                  "name": "KIESERVER_PASSWORD",
-                  "value": "${KIESERVER_PASSWORD}"
-                } ],
+                ],
                 "resources": {
                   "requests": {
                     "cpu": "${CPU_REQUEST}",
